@@ -10,6 +10,6 @@ namespace Domain.Interfaces
     public interface IPostRepository : IRepository<Post>
     {
         Task<IEnumerable<Post>> GetAllWithDetailsAsync();
-        Task<Post> GetByIdWithDetailsAsync();
+        Task<Post> GetByIdWithDetailsAsync(int id);
     }
 }

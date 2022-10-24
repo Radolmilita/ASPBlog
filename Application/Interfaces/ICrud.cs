@@ -9,7 +9,7 @@ namespace Application.Interfaces
     public interface ICrud<T> where T: class
     {
         Task<IEnumerable<T>> GetAllAsync();
-        Task<T> GetAllByIdAsync(int id);
+        Task<T> GetByIdAsync(int id);
         Task AddAsync(T model);
         Task UpdateAsync(T model);
         Task DeleteAsync(int id);
