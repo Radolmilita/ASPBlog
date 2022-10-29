@@ -5,8 +5,6 @@
         ICommentRepository CommentRepository { get; }
         IPersonRepository PersonRepository { get; }
         IPostRepository PostRepository { get; }
-        ITokenRepository TokenRepository { get; }
-        IUserRepository UserRepository { get; }
 
         Task SaveAsync();
     }

@@ -1,9 +1,4 @@
 ﻿using Infrastructure.Database.Repository;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Infrastructure.Database
 {
@@ -15,15 +10,16 @@ namespace Infrastructure.Database
 
         readonly AppContext appContext;
 
-        public ICommentRepository CommentRepository => throw new NotImplementedException();
+        public UnitOfWork(AppContext appContext) 
+        {
+            this.appContext = appContext;
+        }
 
-        public IPersonRepository PersonRepository => throw new NotImplementedException();
+        public ICommentRepository CommentRepository => commentRepository ??= new(appContext);
 
-        public IPostRepository PostRepository => throw new NotImplementedException();
+        public IPersonRepository PersonRepository => personRepository ??= new(appContext);
 
-        public ITokenRepository TokenRepository => throw new NotImplementedException();
-
-        public IUserRepository UserRepository => throw new NotImplementedException();
+        public IPostRepository PostRepository => postRepository ??= new(appContext);
 
         public async Task SaveAsync()
         {
