@@ -1,4 +1,4 @@
-﻿global using Infrastructure.Database;
+﻿global using Infrastructure.DataBase;
 global using Infrastructure.Mappers;
 global using Infrastructure.Tokens;
 global using Domain.Interfaces;

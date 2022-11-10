@@ -1,29 +1,40 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System.Reflection.Metadata.Ecma335;
+﻿using Infrastructure.DataBase;
+using Microsoft.EntityFrameworkCore;
 
-namespace Infrastructure.Database.Repository
+namespace Infrastructure.DataBase.Repository
 {
     public class PostRepository : IPostRepository
     {
-        readonly AppContext context;
+        readonly ContextApp contextApp;
 
-        public PostRepository(AppContext context)
+        public PostRepository(ContextApp contextApp)
         {
-            this.context = context;
+            this.contextApp = contextApp;
         }
 
-        public async Task AddAsync(Post entity) => await context.Posts.AddAsync(entity);
+        public async Task AddAsync(Post entity)
+        {
+            await contextApp.Posts.AddAsync(entity);
+        }
 
-        public void Delete(Post entity) => context.Posts.Remove(entity);
+        public void Delete(Post entity)
+        {
+            contextApp.Posts.Remove(entity);
+        }
 
+        public async Task DeleteByIdAsync(int id)
+        {
+            Delete(await GetByIdAsync(id));
+        }
 
-        public async Task DeleteByIdAsync(int id) => Delete(await GetByIdAsync(id));
-
-        public async Task<IEnumerable<Post>> GetAllAsync() => await context.Posts.ToListAsync();
+        public async Task<IEnumerable<Post>> GetAllAsync()
+        {
+            return await contextApp.Posts.ToListAsync();
+        }
 
         public async Task<IEnumerable<Post>> GetAllWithDetailsAsync()
         {
-            return await context.Posts
+            return await contextApp.Posts
                 .Include(t => t.Person)
                 .Include(t => t.Comments)
                 .ThenInclude(t => t.Person)
@@ -32,12 +43,12 @@ namespace Infrastructure.Database.Repository
 
         public async Task<Post> GetByIdAsync(int id)
         {
-            return await context.Posts.FindAsync(id);
+            return await contextApp.Posts.FindAsync(id);
         }
 
         public async Task<Post> GetByIdWithDetailsAsync(int id)
         {
-            return await context.Posts
+            return await contextApp.Posts
                 .Include(t => t.Person)
                 .Include(t => t.Comments)
                 .ThenInclude(t => t.Person)
@@ -46,7 +57,7 @@ namespace Infrastructure.Database.Repository
 
         public void Update(Post entity)
         {
-            context.Posts.Update(entity);
+            contextApp.Posts.Update(entity);
         }
     }
 }

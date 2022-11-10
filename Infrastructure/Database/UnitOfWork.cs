@@ -1,6 +1,6 @@
-﻿using Infrastructure.Database.Repository;
+﻿using Infrastructure.DataBase.Repository;
 
-namespace Infrastructure.Database
+namespace Infrastructure.DataBase
 {
     public class UnitOfWork : IUnitOfWork
     {
@@ -8,22 +8,22 @@ namespace Infrastructure.Database
         PersonRepository personRepository;
         PostRepository postRepository;
 
-        readonly AppContext appContext;
+        readonly ContextApp contextApp;
 
-        public UnitOfWork(AppContext appContext) 
+        public UnitOfWork(ContextApp contextApp)
         {
-            this.appContext = appContext;
+            this.contextApp = contextApp;
         }
 
-        public ICommentRepository CommentRepository => commentRepository ??= new(appContext);
+        public ICommentRepository CommentRepository => commentRepository ??= new(contextApp);
 
-        public IPersonRepository PersonRepository => personRepository ??= new(appContext);
+        public IPersonRepository PersonRepository => personRepository ??= new(contextApp);
 
-        public IPostRepository PostRepository => postRepository ??= new(appContext);
+        public IPostRepository PostRepository => postRepository ??= new(contextApp);
 
         public async Task SaveAsync()
         {
-            await appContext.SaveChangesAsync();
+            await contextApp.SaveChangesAsync();
         }
     }
 }

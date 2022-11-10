@@ -1,7 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace ServerApp.Controllers
+namespace WebApp.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -13,18 +14,20 @@ namespace ServerApp.Controllers
         {
             this.personService = personService;
         }
+
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<PersonModel>>> Get([FromQuery] PersonFilterSearchModel filter) 
+        public async Task<ActionResult<IEnumerable<PersonModel>>> Get([FromQuery] PersonFilterSearchModel filter)
         {
-            return Ok(await personService.GetAllUsersWithFilterAsync(filter));
+            return Ok(await personService.GetAllPersonWithFilterAsync(filter));
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<PersonModel>> GetById(int id) 
+        public async Task<ActionResult<PersonModel>> GetById(int id)
         {
             var person = await personService.GetByIdAsync(id);
+
             if (person is null)
-                return NotFound("No such person");
+                return NotFound("Person not found.");
 
             return Ok(person);
         }
@@ -36,7 +39,7 @@ namespace ServerApp.Controllers
 
             try
             {
-                var list = await personService.GetAllPostsWithFilterAsync(filter);
+                var list = await personService.GetAllPostWithFilterAsync(filter);
 
                 return Ok(list);
             }
@@ -53,7 +56,7 @@ namespace ServerApp.Controllers
 
             try
             {
-                var list = await personService.GetAllCommentsWithFilterAsync (filter);
+                var list = await personService.GetAllCommentWithFilterAsync(filter);
 
                 return Ok(list);
             }
@@ -81,18 +84,15 @@ namespace ServerApp.Controllers
         [HttpPut("{id}"), Authorize]
         public async Task<ActionResult> Update(int id, [FromBody] PersonModel model)
         {
-            if (id != model.Id)
-                return BadRequest("Ids don't match.");
-
             try
             {
                 await personService.UpdateAsync(model);
 
-                return Ok(model);
+                return Ok();
             }
             catch (BlogException ex)
             {
-                return BadRequest(ex);
+                return BadRequest();
             }
         }
 

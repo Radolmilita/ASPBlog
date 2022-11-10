@@ -4,10 +4,14 @@ namespace Application.Interfaces
 {
     public interface IPersonService : ICrud<PersonModel>
     {
-        Task<IEnumerable<CommentModel>> GetAllUserCommentsAsync(int personModelId);
-        Task<IEnumerable<PostModel>> GetAllUsersPostsAsync(int personModelId);
-        Task<IEnumerable<PersonModel>> GetAllUsersWithFilterAsync(PersonFilterSearchModel model);
-        Task<IEnumerable<CommentModel>> GetAllCommentsWithFilterAsync(CommentFilterSearchModel model);
-        Task<IEnumerable<PostModel>> GetAllPostsWithFilterAsync(PostFilterSearchModel model);
+        Task<IEnumerable<CommentModel>> GetAllPersonCommentsAsync(int personModelId);
+
+        Task<IEnumerable<PostModel>> GetAllPersonPostsAsync(int personModelId);
+
+        Task<IEnumerable<PersonModel>> GetAllPersonWithFilterAsync(PersonFilterSearchModel model);
+
+        Task<IEnumerable<CommentModel>> GetAllCommentWithFilterAsync(CommentFilterSearchModel model);
+
+        Task<IEnumerable<PostModel>> GetAllPostWithFilterAsync(PostFilterSearchModel model);
     }
 }

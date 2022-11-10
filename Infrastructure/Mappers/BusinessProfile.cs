@@ -4,7 +4,7 @@ namespace Infrastructure.Mappers
 {
     public class BusinessProfile : Profile
     {
-        public BusinessProfile() 
+        public BusinessProfile()
         {
             CreateMap<Person, PersonModel>()
                 .ForMember(t => t.PostIds, t => t.MapFrom(n => n.Posts.Select(m => m.Id)))

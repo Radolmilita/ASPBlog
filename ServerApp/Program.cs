@@ -1,16 +1,16 @@
+using Infrastructure.DataBase;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using System.Reflection;
 using System.Text;
-using AppContext = Infrastructure.Database.AppContext;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
 var connection = builder.Configuration.GetConnectionString("Blog");
 
-builder.Services.AddDbContext<AppContext>(t => t.UseSqlServer(connection));
+builder.Services.AddDbContext<ContextApp>(t => t.UseSqlServer(connection));
 
 builder.Services.AddAutoMapper(typeof(BusinessProfile).Assembly);
 
@@ -46,7 +46,6 @@ builder.Services.AddAuthentication(t =>
     };
 });
 
-
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -62,6 +61,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 

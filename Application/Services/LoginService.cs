@@ -7,8 +7,10 @@ namespace Application.Services
 {
     public class LoginService : ILoginService
     {
-        internal readonly IUnitOfWork unitOfWork;
-        internal readonly IToken token;
+        readonly IUnitOfWork unitOfWork;
+
+        readonly IToken token;
+
         public LoginService(IUnitOfWork unitOfWork, IToken token)
         {
             this.unitOfWork = unitOfWork;
@@ -18,11 +20,12 @@ namespace Application.Services
         public async Task<TokenApiModel> Login(LoginModel model)
         {
             Validation(model);
+
             var user = (await unitOfWork.PersonRepository.GetAllAsync())
                 .FirstOrDefault(t => t.Login == model.Login && t.Password == model.Password);
 
             if (user is null)
-                throw new BlogException("User not found");
+                throw new BlogException("User not found.");
 
             var claims = new List<Claim>
             {
@@ -30,11 +33,12 @@ namespace Application.Services
             };
 
             var accessToken = token.GenerateAccessToken(claims);
+
             var refreshToken = token.GenerateRefreshToken();
 
             user.RefreshToken = refreshToken;
 
-            user.TokenExireTime = DateTime.Now.AddDays(7);
+            user.RefreshTokenExpiryTime = DateTime.Now.AddDays(7);
 
             await unitOfWork.SaveAsync();
 
@@ -45,12 +49,13 @@ namespace Application.Services
             };
         }
 
-            static void Validation(LoginModel model) 
+        static void Validation(LoginModel model)
         {
             if (model is null)
                 throw new BlogException("Model is null.");
+
             if (model.Login == string.Empty || model.Password == string.Empty)
-                throw new BlogException("Login or password is empty");
+                throw new BlogException("Login or password is empty.");
         }
     }
 }

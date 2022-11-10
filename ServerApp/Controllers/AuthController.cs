@@ -1,11 +1,7 @@
-﻿using Application.Interfaces;
-using Application.Models;
-using Application.Validation;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
-
-
-namespace ServerApp.Controllers
+namespace WebApp.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

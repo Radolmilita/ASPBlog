@@ -9,7 +9,8 @@ namespace Application.Interfaces
 {
     public interface ITokenService
     {
-        Task<TokenApiModel> Refresh(TokenApiModel model);
-        Task Revoke(TokenApiModel model);
+        Task<TokenApiModel> Refresh(TokenApiModel tokenApiModel);
+
+        Task Revoke(TokenApiModel tokenApiModel);
     }
 }

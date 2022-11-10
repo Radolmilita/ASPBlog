@@ -1,8 +1,6 @@
 ﻿using Application.Interfaces;
 using Application.Models;
 using Application.Validation;
-using System;
-using System.Reflection;
 
 namespace Application.Services
 {
@@ -39,12 +37,12 @@ namespace Application.Services
 
         public async Task<IEnumerable<PersonModel>> GetAllAsync()
         {
-            var list = await unitOfWork.PersonRepository.GetAllWithDetailsAync();
+            var list = await unitOfWork.PersonRepository.GetAllWithDetailsAsync();
 
             return map.Convert<IEnumerable<PersonModel>, IEnumerable<Person>>(list);
         }
 
-        public async Task<IEnumerable<PersonModel>> GetAllUsersWithFilterAsync(PersonFilterSearchModel model)
+        public async Task<IEnumerable<PersonModel>> GetAllPersonWithFilterAsync(PersonFilterSearchModel model)
         {
             var list = await GetAllAsync();
 
@@ -60,7 +58,7 @@ namespace Application.Services
             return list;
         }
 
-        public async Task<IEnumerable<CommentModel>> GetAllUserCommentsAsync(int personModelId)
+        public async Task<IEnumerable<CommentModel>> GetAllPersonCommentsAsync(int personModelId)
         {
             var list = (await unitOfWork
                 .PersonRepository
@@ -70,12 +68,12 @@ namespace Application.Services
             return map.Convert<IEnumerable<CommentModel>, IEnumerable<Comment>>(list);
         }
 
-        public async Task<IEnumerable<CommentModel>> GetAllCommentsWithFilterAsync(CommentFilterSearchModel model)
+        public async Task<IEnumerable<CommentModel>> GetAllCommentWithFilterAsync(CommentFilterSearchModel model)
         {
             if (model.PersonId is null)
                 throw new BlogException("Id s nill.");
 
-            var list = await GetAllUserCommentsAsync((int)model.PersonId);
+            var list = await GetAllPersonCommentsAsync((int)model.PersonId);
 
             if (model.Page is int page && model.Limit is int limit)
                 list = list.Skip(page * limit).Take(limit);
@@ -83,7 +81,7 @@ namespace Application.Services
             return list;
         }
 
-        public async Task<IEnumerable<PostModel>> GetAllUsersPostsAsync(int personModelId)
+        public async Task<IEnumerable<PostModel>> GetAllPersonPostsAsync(int personModelId)
         {
             var list = (await unitOfWork
                 .PersonRepository
@@ -93,12 +91,12 @@ namespace Application.Services
             return map.Convert<IEnumerable<PostModel>, IEnumerable<Post>>(list);
         }
 
-        public async Task<IEnumerable<PostModel>> GetAllPostsWithFilterAsync(PostFilterSearchModel model)
+        public async Task<IEnumerable<PostModel>> GetAllPostWithFilterAsync(PostFilterSearchModel model)
         {
             if (model.PersonId is null)
                 throw new BlogException("Id s nill.");
 
-            var list = await GetAllUsersPostsAsync((int)model.PersonId);
+            var list = await GetAllPersonPostsAsync((int)model.PersonId);
 
             if (model.Page is int page && model.Limit is int limit)
                 list = list.Skip((page - 1) * limit).Take(limit);
@@ -135,7 +133,7 @@ namespace Application.Services
             if (model.FirstName == string.Empty || model.LastName == string.Empty)
                 throw new BlogException("Name is empty.");
 
-            if (DateTime.Now.Year - model.BirthDate.Year < 0 || DateTime.Now.Year - model.BirthDate.Year > 150)
+            if (DateTime.Now.Year - model.BirthDate.Value.Year < 0 || DateTime.Now.Year - model.BirthDate.Value.Year > 150)
                 throw new BlogException("Date is incorrect.");
         }
     }

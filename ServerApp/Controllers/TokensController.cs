@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace ServerApp.Controllers
+namespace WebApp.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -16,7 +16,7 @@ namespace ServerApp.Controllers
         }
 
         [HttpPost("refresh")]
-        public async Task<ActionResult<TokenApiModel>> Refresh([FromBody] TokenApiModel tokenApiModel) 
+        public async Task<ActionResult<TokenApiModel>> Refresh([FromBody] TokenApiModel tokenApiModel)
         {
             try
             {
@@ -24,22 +24,22 @@ namespace ServerApp.Controllers
 
                 return Ok(model);
             }
-            catch (BlogException ex) 
+            catch (BlogException ex)
             {
                 return BadRequest(ex);
             }
         }
 
         [HttpPost("revoke"), Authorize]
-        public async Task<ActionResult> Revoke([FromBody] TokenApiModel model) 
+        public async Task<ActionResult> Revoke([FromBody] TokenApiModel tokenApiModel)
         {
             try
             {
-                await tokenService.Revoke(model);
+                await tokenService.Revoke(tokenApiModel);
 
                 return Ok();
             }
-            catch (BlogException ex) 
+            catch (BlogException ex)
             {
                 return BadRequest(ex);
             }

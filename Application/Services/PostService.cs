@@ -1,12 +1,6 @@
 ﻿using Application.Interfaces;
 using Application.Models;
 using Application.Validation;
-using Domain.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Application.Services
 {
@@ -59,7 +53,7 @@ namespace Application.Services
             return map.Convert<IEnumerable<PostModel>, IEnumerable<Post>>(list);
         }
 
-        public async Task<IEnumerable<PostModel>> GetAllPostsWithFilterAsync(PostFilterSearchModel model)
+        public async Task<IEnumerable<PostModel>> GetAllPostWithFilterAsync(PostFilterSearchModel model)
         {
             var list = await unitOfWork.PostRepository.GetAllWithDetailsAsync();
 
@@ -81,7 +75,7 @@ namespace Application.Services
             return map.Convert<IEnumerable<PostModel>, IEnumerable<Post>>(list);
         }
 
-        public async Task<IEnumerable<CommentModel>> GetAllPostCommentsAsync(int postModelId)
+        public async Task<IEnumerable<CommentModel>> GetAllPostCommentAsync(int postModelId)
         {
             var list = (await unitOfWork
                 .PostRepository
@@ -91,12 +85,12 @@ namespace Application.Services
             return map.Convert<IEnumerable<CommentModel>, IEnumerable<Comment>>(list);
         }
 
-        public async Task<IEnumerable<CommentModel>> GetAllCommentsWithFilterAsync(CommentFilterSearchModel model)
+        public async Task<IEnumerable<CommentModel>> GetAllCommentWithFilterAsync(CommentFilterSearchModel model)
         {
             if (model.PostId is null)
                 throw new BlogException("Id s nill.");
 
-            var list = await GetAllPostCommentsAsync((int)model.PostId);
+            var list = await GetAllPostCommentAsync((int)model.PostId);
 
             if (model.Page is int page && model.Limit is int limit)
                 list = list.Skip((page - 1) * limit).Take(limit);
@@ -111,7 +105,7 @@ namespace Application.Services
             return map.Convert<PostModel, Post>(post);
         }
 
-        public async Task DeleteCommentAsync(int commentModelId)
+        public async Task RemoveCommentAsync(int commentModelId)
         {
             await unitOfWork.CommentRepository.DeleteByIdAsync(commentModelId);
 
@@ -145,7 +139,7 @@ namespace Application.Services
             if (model is null)
                 throw new BlogException("Model is null.");
 
-            if (model.Title == string.Empty || model.Body == string.Empty)
+            if (model.Title == string.Empty || model.Content == string.Empty)
                 throw new BlogException("Title or Content is empty.");
         }
 

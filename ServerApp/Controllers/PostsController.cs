@@ -2,8 +2,10 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace ServerApp.Controllers
+namespace WebApp.Controllers
 {
+    [Route("api/[controller]")]
+    [ApiController]
     public class PostsController : ControllerBase
     {
         readonly IPostService postService;
@@ -13,39 +15,40 @@ namespace ServerApp.Controllers
             this.postService = postService;
         }
 
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<PostModel>>> Get([FromQuery] PostFilterSearchModel filter) 
+        [HttpGet, Authorize]
+        public async Task<ActionResult<IEnumerable<PostModel>>> Get([FromQuery] PostFilterSearchModel filter)
         {
-            return Ok(await postService.GetAllPostsWithFilterAsync(filter));
+            return Ok(await postService.GetAllPostWithFilterAsync(filter));
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<PostModel>> GetById(int id) 
+        public async Task<ActionResult<PostModel>> GetById(int id)
         {
             var post = await postService.GetByIdAsync(id);
+
             if (post is null)
-                return NotFound("No such post");
+                return NotFound("Post not found.");
 
             return Ok(post);
         }
 
         [HttpGet("{id}/comments")]
-        public async Task<ActionResult<IEnumerable<CommentModel>>> GetComments(int id, [FromQuery] CommentFilterSearchModel filter) 
+        public async Task<ActionResult<IEnumerable<CommentModel>>> GetComments(int id, [FromQuery] CommentFilterSearchModel filter)
         {
             filter.PostId = id;
 
             try
             {
-                return Ok(await postService.GetAllCommentsWithFilterAsync(filter));
+                return Ok(await postService.GetAllCommentWithFilterAsync(filter));
             }
-            catch(BlogException ex) 
-            { 
-                return BadRequest(ex);  
+            catch (BlogException ex)
+            {
+                return BadRequest(ex);
             }
         }
 
         [HttpPost]
-        public async Task<ActionResult> Add([FromBody] PostModel post) 
+        public async Task<ActionResult> Add([FromBody] PostModel post)
         {
             try
             {
@@ -53,17 +56,15 @@ namespace ServerApp.Controllers
 
                 return Ok(post);
             }
-            catch (BlogException ex) 
+            catch (BlogException ex)
             {
                 return BadRequest(ex);
             }
         }
 
         [HttpPost("{id}/comments"), Authorize]
-        public async Task<ActionResult> Add(int id, [FromBody] CommentModel comment)
+        public async Task<ActionResult> AddComment(int id, [FromBody] CommentModel comment)
         {
-            comment.Id = id;
-
             try
             {
                 await postService.AddCommentAsync(comment);
@@ -80,7 +81,7 @@ namespace ServerApp.Controllers
         public async Task<ActionResult> Update(int id, [FromBody] PostModel post)
         {
             if (id != post.Id)
-                return BadRequest("No such post");
+                return BadRequest("Ids don't match.");
 
             try
             {
@@ -98,7 +99,7 @@ namespace ServerApp.Controllers
         public async Task<ActionResult> UpdateComment(int postId, int commentId, [FromBody] CommentModel comment)
         {
             if (comment.Id != commentId || comment.PostId != postId)
-                return BadRequest("No such comment");
+                return BadRequest("Ids don't match.");
 
             try
             {
@@ -123,7 +124,7 @@ namespace ServerApp.Controllers
         [HttpDelete("{postId}/comments/{commentId}"), Authorize]
         public async Task<ActionResult> DeleteComment(int postId, int commentId)
         {
-            await postService.DeleteCommentAsync(commentId);
+            await postService.RemoveCommentAsync(commentId);
 
             return Ok();
         }

@@ -1,6 +1,11 @@
 ﻿using Application.Interfaces;
 using Application.Models;
 using Application.Validation;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Application.Services
 {
@@ -16,13 +21,13 @@ namespace Application.Services
             this.token = token;
         }
 
-        public async Task<TokenApiModel> Refresh(TokenApiModel model)
+        public async Task<TokenApiModel> Refresh(TokenApiModel tokenApiModel)
         {
-            Validation(model);
+            Validation(tokenApiModel);
 
-            var accessToken = model.AccessToken;
+            var accessToken = tokenApiModel.AccessToken;
 
-            var refreshToken = model.RefreshToken;
+            var refreshToken = tokenApiModel.RefreshToken;
 
             var principal = token.GetPrincipalFromExpiredToken(accessToken);
 
@@ -31,7 +36,7 @@ namespace Application.Services
             var user = (await unitOfWork.PersonRepository.GetAllAsync())
                 .FirstOrDefault(t => t.Login == username);
 
-            if (user is null || user.RefreshToken != refreshToken || user.TokenExireTime <= DateTime.Now)
+            if (user is null || user.RefreshToken != refreshToken || user.RefreshTokenExpiryTime <= DateTime.Now)
                 throw new BlogException("Invalid request.");
 
             var newAccessToken = token.GenerateAccessToken(principal.Claims);
@@ -49,11 +54,11 @@ namespace Application.Services
             };
         }
 
-        public async Task Revoke(TokenApiModel model)
+        public async Task Revoke(TokenApiModel tokenApiModel)
         {
-            Validation(model);
+            Validation(tokenApiModel);
 
-            var principal = token.GetPrincipalFromExpiredToken(model.AccessToken);
+            var principal = token.GetPrincipalFromExpiredToken(tokenApiModel.AccessToken);
 
             var username = principal.Identity.Name;
 
@@ -61,7 +66,7 @@ namespace Application.Services
                 .FirstOrDefault(t => t.Login == username);
 
             if (user == null)
-                throw new BlogException("User haven't been found.");
+                throw new BlogException("User not found.");
 
             user.RefreshToken = null;
 

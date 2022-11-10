@@ -1,29 +1,25 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Infrastructure.DataBase;
+using Microsoft.EntityFrameworkCore;
 
-namespace Infrastructure.Database.Repository
+namespace Infrastructure.DataBase.Repository
 {
     public class CommentRepository : ICommentRepository
     {
-        readonly AppContext appContext;
+        readonly ContextApp contextApp;
 
-        public CommentRepository(AppContext appContext)
+        public CommentRepository(ContextApp contextApp)
         {
-            this.appContext = appContext;
+            this.contextApp = contextApp;
         }
 
         public async Task AddAsync(Comment entity)
         {
-            await appContext.Comments.AddAsync(entity); 
+            await contextApp.Comments.AddAsync(entity);
         }
 
         public void Delete(Comment entity)
         {
-            appContext.Comments.Remove(entity);
+            contextApp.Comments.Remove(entity);
         }
 
         public async Task DeleteByIdAsync(int id)
@@ -33,12 +29,12 @@ namespace Infrastructure.Database.Repository
 
         public async Task<IEnumerable<Comment>> GetAllAsync()
         {
-            return await appContext.Comments.ToListAsync();
+            return await contextApp.Comments.ToListAsync();
         }
 
         public async Task<IEnumerable<Comment>> GetAllWithDetailsAsync()
         {
-            return await appContext.Comments
+            return await contextApp.Comments
                 .Include(t => t.Person)
                 .Include(t => t.Post)
                 .ToListAsync();
@@ -46,12 +42,12 @@ namespace Infrastructure.Database.Repository
 
         public async Task<Comment> GetByIdAsync(int id)
         {
-            return await appContext.Comments.FindAsync(id);
+            return await contextApp.Comments.FindAsync(id);
         }
 
         public async Task<Comment> GetByIdWithDetailsAsync(int id)
         {
-            return await appContext.Comments
+            return await contextApp.Comments
                 .Include(t => t.Person)
                 .Include(t => t.Post)
                 .FirstOrDefaultAsync(t => t.Id == id);
@@ -59,7 +55,7 @@ namespace Infrastructure.Database.Repository
 
         public void Update(Comment entity)
         {
-            appContext.Comments.Update(entity);
+            contextApp.Comments.Update(entity);
         }
     }
 }
